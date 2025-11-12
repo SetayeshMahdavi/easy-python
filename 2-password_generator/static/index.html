@@ -1,0 +1,53 @@
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Password Generator</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 40px auto; }
+    label { display: block; margin: 8px 0; }
+    #result { margin-top: 12px; font-weight: bold; word-break: break-all; }
+    button { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Password Generator</h1>
+
+  <label>
+    Length:
+    <input id="length" type="number" value="12" min="1" max="256">
+  </label>
+  <label><input id="uppercase" type="checkbox" checked> Include uppercase</label>
+  <label><input id="numbers" type="checkbox" checked> Include numbers</label>
+  <label><input id="special" type="checkbox" checked> Include special characters</label>
+
+  <button id="generate">Generate</button>
+  <p id="result">—</p>
+
+  <script>
+    document.getElementById("generate").addEventListener("click", async () => {
+      const body = {
+        length: Number(document.getElementById("length").value),
+        include_uppercase: document.getElementById("uppercase").checked,
+        include_numbers: document.getElementById("numbers").checked,
+        include_special: document.getElementById("special").checked
+      };
+
+      try {
+        const res = await fetch("/generate-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        document.getElementById("result").textContent = data.password || data.error;
+      } catch (err) {
+        document.getElementById("result").textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
